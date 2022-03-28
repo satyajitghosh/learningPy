@@ -86,3 +86,7 @@ def delete(head,val):
             head.val = min
             head.right = delete(head.right,min)
             return head
+
+t1 = BSTNode(12)
+add_list(t1,[6,18,3,9,15,21])
+print(in_order_traversal(t1))
