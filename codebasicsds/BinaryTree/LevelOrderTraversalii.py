@@ -57,7 +57,7 @@ def levelOrder(root):
                 queue.append(currNode.right)
             currSize = currSize - 1
 
-        full_list.append(currList)
+        full_list.insert(0,currList)
 
     return(full_list)
 
