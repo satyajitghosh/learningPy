@@ -21,7 +21,6 @@ class Employee:
         self.first = first
         self.last = last
     
-
 def main():
     emp = Employee('Satyajit','Ghosh')
     print(emp.fullname)
@@ -46,8 +45,6 @@ def main():
     ## ie. the following will fail.
     ## emp.email = 'Satyajit.Ghosh@email.com'
     ## unless we define a setter function with property @email.setter
-
-
 
 
 if __name__ == '__main__':
