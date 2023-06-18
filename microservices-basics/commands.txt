@@ -1,0 +1,119 @@
+# Command to build the image file.
+# Run in the same folder where Dockerfile is present.
+docker build -t web .
+
+#Command to run the image file
+docker run -p 80:5000 web
+
+#### Important Docker Commands in General.
+Studied from this video on youtube - https://www.youtube.com/watch?v=3c-iBn73dDE
+docker images - Lists all the images that are available locally.
+Docker ps - provides the list of containers running, and some other info. eg. Id,Image, Ports etc.
+docker run - starts the container in the attaced mode. Ctrc + C stops the container.
+docker run -d - starts the container in the detached mode. Keeps running in background.
+docker stop [ID] - Stops the container with the given ID. ID can be seen using docker ps.
+docker start [ID] - Starts the same above container again. Interesting. This means that the ID is somehow preserved?
+docker ps -a - Lists all the containers - running and not running.
+docker run [IMAGE]:[TAG] - Runs the GIven Image with the relvant tag(version). If the image is  
+            not found locally, it pulls the same form the repository (like git pull.), and then 
+            runs the same.
+We can start 2 different instances of the same application simultaneously.
+For eg. there can be two containers, each using the image of web (image name).
+The two containers will need to have different port mappings.
+80/81 - ports of the computer on which docker is running. Will have to be different.
+5000  - port of the container hosting the app instance. Will be the same.
+docker run -p 80:5000 web
+docker run -p 81:5000 web
+
+Might be specially useful for comparing the behaviour of one version of web app with another.
+docker run -p 80:5000 web:1.0
+docker run -p 81:5000 web:2:0
+
+Can compare by running 2 versions of the web app on the same machine simultaneously.
+
+docker logs [ID] - Prints the logs of the container with the given ID.
+
+Assigning names to containers- could be useful,makes it easy to identify.
+docker run -p 80:5000 --name web-oldversion web:1.0
+docker run -p 80:5000 --name web-newversion web:1.0
+
+Getting a terminal for a given container to see what is going inside the container.
+docker exec -it [ID] /bin/bash
+docker exec -it [ID] /bin/sh
+Some cases - bash does not work.
+You can check the file system,env,processes etc.
+
+Difference between docker start and docker run?
+Docker run is used when the container is run for the first time.
+We provide all the attributes such as port mapping, image, name etc. when using run.
+If we stop the container at some time, these are still stored and mapped with the given container id.
+And a simple docker start (without any attributes) can start the container.
+
+
+Docker Network
+==============
+Multiple containers that are a part of a single docker network can communicate with each other 
+by just using the container names.
+
+Eg. here we have two containers mongodb and mongo-express within the same network - mongo-network
+
+docker network ls
+docker network create mongo-network
+
+#Command to run mongo-db
+docker run -p 27017:27017 -d
+-e MONGO_INITDB_ROOT_USERNAME=admin 
+-e MONGO_INITDB_ROOT_USERNAME=password #env variables
+--name mongodb #container name
+--net mongo-network #network name
+mongo #image name
+
+docker ps
+docker logs mongodb # to check if mongodb started successfully.
+
+#Command to run mongo-express
+docker -d
+-p 8081:8081 #default port for mongo express
+-e ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+-e ME_CONFIG_MONGODB_ADMINPASSWORD=password
+--net mongo-network
+--name mongo-express
+-e ME_CONGIG_MONGODB_SERVER=mongodb # note - this works because the mongodb container is within the same network.
+mongo-express # image name
+
+docker logs mongo-express # to check if this worked successfully.
+
+Docker Compose
+==============
+
+The two commands used above to start the two containers seem wordy.
+What if our application required us to start 10?
+Docker Compose is an organized way to represent this information.
+Similar to a yaml/config file.
+
+File Contents - mongo.yaml
+
+version: '3'
+services:
+    mongodb:
+        image: mongo
+        ports:
+        -27017:27017
+        environment:
+        - MONGO_INITDB_ROOT_USERNAME=admin
+        - MONGO_INITDB_ROOT_PASSWORD=password
+    mongo-express:
+        image: mongo-express
+        ports:
+        -8081:8081
+        environment:
+        -ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+        -ME_CONFIG_MONGODB_ADMINPASSWORD=password        
+        -ME_CONFIG_MONGODB_SERVER=mongodb
+
+Command to Create containers - 
+# creates a network and starts the containers mentioned.
+docker-compose -f mongo.yaml up
+
+# Stops the containers mentioned and then brngs down the network.
+docker-compose -f mongo.yaml down
