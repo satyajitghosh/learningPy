@@ -117,3 +117,26 @@ docker-compose -f mongo.yaml up
 
 # Stops the containers mentioned and then brngs down the network.
 docker-compose -f mongo.yaml down
+
+
+Writing Docker files
+====================
+Some thoughts/comments -
+
+FROM python:3.10.11-alpine3.18 # This is the image of the appropriate Python version.
+WORKDIR /app # This directory is created inside the container. Creates and switches to the given dir.
+COPY requirements.txt . # The first argument of the COPY is the path on the source host, the second arguent is path on the container.
+RUN pip install -r requirements.txt # Basically you can run linux commands on the container, by prefixing with RUN.
+COPY src src # src directory on the source host is copied to /app/src, because workdir is /app.
+EXPOSE 5000
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:5000/health || exit 1
+ENTRYPOINT ["python","./src/app.py"]
+
+docker rm [CONTAINER_ID] - to delete a container.
+docker rmi [IMAGE_ID] - to delete an image.
+
+Docker Volumes
+==============
+Used to persist data even after a container is restarted.
+Map the data folder in the container to a folder on the host.
+And that away, the host is mounted to container every tiime it is started.
