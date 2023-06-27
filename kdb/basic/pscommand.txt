@@ -1,0 +1,2 @@
+Start-Transcript -Path "C:\Users\user\checkout\learningPy\kdb\basic\notestemp.txt"
+Stop-Transcript

@@ -1,0 +1,581 @@
+﻿q)42
+42
+q)/ This is a 64 bit integer
+q)42
+42
+q)/ 32 bit integer
+q)42i
+42i
+q)2+3
+5
+q)7*8
+56
+q)/ division is not slash, it is %
+q)5%2
+2.5
+q)4%2
+2f
+q)/ f at the end indicates that the result of the division is always floating point type data.
+q)1 2 3
+1 2 3
+q)/ This is a list
+q)/adding tw lisis
+q)/adding two lists
+q)1 2 3 + 10 20 30
+11 22 33
+q)/ Vector programming language
+q)/ This means that anytime it makes sense to operate on lists, it does.
+q)1.0 2.0 3.0
+1 2 3f
+
+q)til 6
+0 1 2 3 4 5
+q)count til 6
+6
+q)count 1 2 3
+3
+q)/ count is an operator that counts the number of items in the list.
+q)1 + 10 20 30
+11 21 31
+q)/ operations are generally vectorized in kdb.
+q)/ in the above example it means that the operation of addition is performed on the individual elements of the list.
+q)0 1 2 3 4 5 % 2
+0 0.5 1 1.5 2 2.5
+q)/ division is done by the % operator and the result is always float
+q)4 % 2
+2f
+q)/ note the f at the end of 2 in the above list - this implies that the result 2 is not a long integer but a float.
+q)/ all operators have the same presedence in q
+q)/ which means that the operators are evaluated in no particular pre-decided order
+q)/ instead we have presedence - right to left, which means an expression is always evaluated right to left.
+q)/ the below example demonstrates this - the answer in any other language would be 10
+q)2*3+4
+14
+q)count til 1000000
+1000000
+q)til 20
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
+q)1 + til 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+q)2 * til 20
+0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38
+
+
+q)/ Boolean values are 1 - True and 0 - False in KDB
+q)1b
+1b
+q)/ This is true
+q)101b
+101b
+q)/ this is a list of boolean values - true,false,true
+q)count 101b
+3
+q)/ count gives the length as 3
+q)1 2 3 = 10 20 30
+000b
+q)1 2 3 = 10 2 30
+010b
+q)/ again = is a vectorized operation that compares individual items in the list and returns a result list
+q)/ instead of comparing the whole lists and returning a single result.
+q)/ Dates in KDB
+q)/ Dates are counted from the starting of the millenium
+q)2000.01.01 = 0
+1b
+q)/ This copmarison returns true, as the underlying value of the date is 0
+q)1999.12.31 = -1
+1b
+q)2000.01.05 - 2020.01.01
+-7301i
+q)2000.01.05 - 2000.01.01
+4i
+q)/ 4i denotes the value 4 as an integer
+q)2000.01.01 = 2000.01m
+1b
+q)/ equating first day of month with month
+q)2020.01.01 + til 31
+2020.01.01 2020.01.02 2020.01.03 2020.01.04 2020.01.05 2020.01.06 2020.01.07 ..
+q)2020.01.01 + til 5
+2020.01.01 2020.01.02 2020.01.03 2020.01.04 2020.01.05
+
+q)/ Casting operations in Q
+q)`long$1.0
+1
+q)/ the $ is an operator in q - among other things it means to cast.
+q)/ 1.0 is of float type
+q)/ target type is long integer which is specified on the left.
+q)/ the output is 1 - which is of type long integer.
+q)`float$1
+1f
+q)/ In the next example, the integer 1 is casted to float. Note the reult is 1f.
+q)`boolean$1.0
+1b
+q)/ Casted from float to boolean
+q)`date$31
+2000.02.01
+q)/CAsted from integer to date
+q)
+
+
+q)/Operations on Lists - without using loops
+q)10 20 30 40 50
+10 20 30 40 50
+q)0 +/ 10 20 30 40 50
+150
+q)/ Initialize to 0 and 'add' across the list.
+q)0 */ 10 20 30 40 50
+0
+q)1 */ 10 20 30 40 50
+12000000
+q)/ Initialize to 1 and multiply across the list.
+q)/ the slash operator is called over in q, in functional programing it is called fold.
+q)/ It takes the preceding operator - + or * and applies it across the items pairwise in the list.
+q)(+/) 10 20 30 40 50
+150
+q)/ sometimes, we do not need to specify an initia value.
+q)(*/) 10 20 30
+6000
+q)(+/) til 9999
+49985001
+q)(+/) til 999999
+499998500001
+q)/ this result comes in the blink of an eye. See how fast this is!
+q)/ New operators in Q - | and &
+q)/ | returns the larger of the two operands
+q)/ & returns the smaller of the two operands
+q)4|2
+4
+q)5|10
+10
+q)4&2
+2
+q)5&10
+5
+q)/ Now see the power of these by applying these to a list
+q)(|/) 10 20 30 40 50
+50
+q)(|/) til 100
+99
+q)(&/) 10 20 30 40 50
+10
+q)(&/) til 20000
+0
+q)/ Manager friendly names for the things we have done now.
+q)sum 10 20 30 40 50
+150
+q)min 10 20 30 40 50
+10
+q)max 10 20 30 40 50
+50
+q)/ Operators - | and & on boolean data
+q)/ standard or operation
+q)1b|0b
+1b
+q)/ standard and operation
+q)1b&0b
+0b
+q)/ replace forward slash with back slash and it keeps the intermediate results
+q)(+/) 10 20 30 40 50
+150
+q)(+\) 10 20 30 40 50
+10 30 60 100 150
+q)/ ie. the cumulative results are stored.
+q)(&\) 40 20 10 30 50
+40 20 10 10 10
+q)/ the above shows the running minimum
+q)(|\) 40 20 10 30 50
+40 40 40 40 50
+q)/ the running maximum
+q)/ we have names for these as well
+q)sums 10 20 30 40 50
+10 30 60 100 150
+q)mins 40 20 10 30 50
+40 20 10 10 10
+q)maxs 40 20 10 30 50
+40 40 40 40 50
+q)
+
+
+q)/ Functions in Q
+q){[x]x*x}[5]
+25
+q)/ if there is only one argument then the last se of square brackets are ot required.
+q){[x]x*x}5
+25
+q)/ the above works because q assumes that the arguments will benames x,y,z in that particular order, so x,y,z can be used without declaration
+q)/ only if used in that particular order.
+q)
+
+
+q)/ Newton Raphson method
+q)/ To guess the root of a plynomial function
+q)/ Take a guess of the root. Evaluate derivative at the root. Project derivative to x axis. That is the nect guess.
+q)/ Keep doing the same until the value of the function at the guess reaches close to 0. ie. converges to 0.
+q)
+q)/ writing a function to do that.
+q)/ Also, for simplicity, take the polynomial here to bet - f(x) = 2 - x^2
+q){[xn] xn + (2-xn*xn)%2*xn}[1.0]
+1.5
+q){[xn] xn + (2-xn*xn)%2*xn}[1.0f]
+1.5
+q){[xn] xn + (2-xn*xn)%2*xn}\[1.0f]
+1 1.5 1.416667 1.414216 1.414214 1.414214
+q)/ this iteratively keeps running until convergence. How does this work?
+q)/The slash and the back slash operators do this -
+q)/ they keep iterating - putting the output of the first operation as input to the next operation
+q)/ until the difference between the input and the output differs by an insignificant amount.
+q)
+q)
+q)/ The # operator
+q)/ This has many overloads
+q)/ one of which is to get the first n items/ last n items
+q)2 # 10 20 30 40 50
+10 20
+q)-2 # 10 20 30 40 50
+40 50
+q)5 # 10 20 30
+10 20 30 10 20
+q)-5 # 10 20 30
+20 30 10 20 30
+q)/ The , operator joins the lists
+q)10 20 30, 40 50
+10 20 30 40 50
+q){-2#x} 1 1
+1 1
+q){-2#x} [3 4 5]
+4 5
+q)/ {-2#x} is a function that return the last two items of the list - as can be seen from the above examples.
+q)/ returns the last two items of the list that is passed to it.
+q){sum -2#x} 1 1
+2
+q)/ sums the last two items of the list that is passed to it.
+q){x,sum -2#x} 1 1
+1 1 2
+q)/ sums the last two items of the list and appends it to the original list.
+q){x,sum -2#x}/[10;1 1]
+1 1 2 3 5 8 13 21 34 55 89 144
+q)/ does this 10 times. Generates the fibbonaci sequance.
+q)
+
+q)/ the deltas function
+q)deltas 10 20 30 40 50
+10 10 10 10 10
+q)deltas 110 120 130 140 150
+110 10 10 10 10
+q)/note that the first item is 110 - we would probably want it to be 0, but it is not.
+q)sums 110 120 130 140 150
+110 230 360 500 650
+q)deltas sums 110 120 130 140 150
+110 120 130 140 150
+q)/ deltas sums returns the same list
+q)/ sums deltas returns the same list
+q)sums deltas 110 120 130 140 150
+110 120 130 140 150
+q)/ variables in  q are assigned using the colon operator - :
+q)/ as opposed to = , which denotes the comparison operator here, and returns a True/False result
+q)a:42
+q)a
+42
+q)buys:2 1 4 3 5 4
+q)sells:12
+q)buys:2 1 4 3 5 4
+q)sell:12
+q)/ we need to allocate buys until we reach the number of sell.
+q)/ ie. the answer we are expecting is 2 1 4 3 2 0
+q)sums buys
+2 3 7 10 15 19
+q)sell & sums buys
+2 3 7 10 12 12
+q)delta sell & sums buys
+'delta
+  [0]  delta sell & sums buys
+       ^
+q)deltas sell & sums buys
+2 1 4 3 2 0
+q)
+
+
+q)/ Tables in Q
+q)/ Unlike regular databases, in KDB, tables are collection of cloumns, and not collection of rows.
+q)/ This is important to remember.
+q)/ Because, tables are a collection of columns.
+q)/ Columns are essentially lists
+q)/ And operations on lists are vector operations.
+q)/ Therefore, an operation on a table is a vector operaion.
+q)
+q)
+q)2018.01.01+5?31
+2018.01.13 2018.01.09 2018.01.11 2018.01.02 2018.01.27
+q)5?31
+9 26 11 26 5
+q)/ this command picks 5 random numbers between 0 and 31
+q)
+q)/ let's create our first column - called dates
+q)dates:2018.01.01+1000000?31
+q)count dates
+1000000
+q)/ one million items in the dates list/column
+q)/ the instructor did this with 10 million but I am scared.
+q)/ but let's give it a go
+q)dates:2018.01.01+10000000?31
+q)count dates
+10000000
+q)/ here we are.
+q)/ saw the computer just hesitate for a fraction of a second.
+q)times:10000000?24:00:00.0000
+q)count times
+10000000
+q)qtys:100*1+10000000?100
+q)qtys
+9800 2900 2500 9800 1300 3700 4600 6200 7300 5700 4800 8800 2700 5700 6100 70..
+q)ixs:10000000?3
+q)syms:`aapl`amzn`googl ixs
+q)syms
+`amzn`aapl`aapl`aapl`amzn`googl`aapl`googl`aapl`aapl`aapl`aapl`googl`googl`aa..
+q)/ How does the last command work?
+q)/ Note that `aapl`amzn`googl is a list of strings, containing the three symbols
+q)`aapl`amzn`googl
+`aapl`amzn`googl
+q)count `aapl`amzn`googl
+3
+q)/ ixs is a list of random entries - either 0,1,2
+q)/ so when we write the lists next to each other, a vecotrized operation is performed.
+q)/ each item in the resulting list is the 0th,1st or 2nd item of the first list, depending on whether the corresponding entry in second
+q)/ ist is 0,1 or 2
+q)/ ex. if the 10th entry in second list is 1, the resulting list will have firstlist[1] = amzn
+q)/ therefore, the 10th item of the result list is amzn
+q)syms
+`amzn`aapl`aapl`aapl`amzn`googl`aapl`googl`aapl`aapl`aapl`aapl`googl`googl`aa..
+q)172.0 1189.0 1073.0 ixs
+1189 172 172 172 1189 1073 172 1073 172 172 172 172 1073 1073 172 1073 1073 1..
+q)pxs: (1+10000000?.03)*172.0 1189.0 1073.0 ixs
+q)pxs
+1191.612 174.7901 172.6709 174.3506 1216.809 1084.755 174.7502 1096.524 176.3..
+q)t:([] date:dates,time:times,sym:syms,qty:qtys,px:pxs)
+q)select [10] from t
+date
+----------
+2018.01.05
+2018.01.18
+2018.01.22
+2018.01.12
+2018.01.04
+2018.01.20
+2018.01.05
+2018.01.14
+2018.01.09
+2018.01.18
+q)/ something is wrong.
+q)t:([] date:dates;time:times;sym:syms;qty:qtys;px:pxs)
+q)select [10] from t
+date       time         sym   qty  px
+-------------------------------------------
+2018.01.05 12:28:24.601 amzn  9800 1191.612
+2018.01.18 04:51:45.568 aapl  2900 174.7901
+2018.01.22 08:37:21.999 aapl  2500 172.6709
+2018.01.12 04:54:04.739 aapl  9800 174.3506
+2018.01.04 15:19:12.453 amzn  1300 1216.809
+2018.01.20 11:39:01.849 googl 3700 1084.755
+2018.01.05 07:37:03.833 aapl  4600 174.7502
+2018.01.14 19:00:00.926 googl 6200 1096.524
+2018.01.09 10:29:44.916 aapl  7300 176.3655
+2018.01.18 21:32:47.041 aapl  5700 174.5445
+q)/ this is correct. Incorrectly used , instead of ; in the earlier t command.
+q)t:`date`time xasc t
+q)/ woah, we just sorted 10 million rows based on date and time in less than 3 seconds.
+q)/ Simply Incredible!!
+q)5#t
+date       time         sym   qty  px
+-------------------------------------------
+2018.01.01 00:00:01.116 aapl  3400 174.1875
+2018.01.01 00:00:01.846 googl 8800 1095.261
+2018.01.01 00:00:02.035 googl 600  1086.635
+2018.01.01 00:00:02.097 googl 5700 1097.891
+2018.01.01 00:00:02.136 googl 5100 1096.945
+q)/ ok, so here 5#t works because the table is considered as a list of rows.
+q)/ but I think, in all practical cases the table is stored a s a collection of columns
+q)select [2] date,time from t
+date       time
+-----------------------
+2018.01.01 00:00:01.116
+2018.01.01 00:00:01.846
+q)select [2] date,time,qty,px from t
+date       time         qty  px
+-------------------------------------
+2018.01.01 00:00:01.116 3400 174.1875
+2018.01.01 00:00:01.846 8800 1095.261
+q)select [2] date,time,qty,px from t where sym=`aapl`
+'length
+  [0]  select [2] date,time,qty,px from t where sym=`aapl`
+                                                    ^
+q)select [2] date,time,qty,px from t where sym=`aapl
+date       time         qty  px
+-------------------------------------
+2018.01.01 00:00:01.116 3400 174.1875
+2018.01.01 00:00:02.187 7400 175.3605
+q)\ we just carried out a filter operation against 10 million rows.
+
+q)dates:2018.01.01+10000000?31
+q)times:10000000?24:00:00.0000
+q)qtys:100*1+10000000?100
+q)ixs:10000000?3
+q)syms:`aapl`amzn`googl ixs
+q)pxs: (1+10000000?.03)*172.0 1189.0 1073.0 ixs
+q)t:([] date:dates;time:times;sym:syms;qty:qtys;px:pxs)
+q)t:`date`time xasc t
+q)select [2] date,time,qty,px from t where sym=`aapl
+date       time         qty  px
+-------------------------------------
+2018.01.01 00:00:01.129 8800 174.7627
+2018.01.01 00:00:02.670 1400 175.7161
+q)/ just reran the commands from the previous session.
+q)select [2] date,time,qty,px from t where sym=`aapl
+date       time         qty  px
+-------------------------------------
+2018.01.01 00:00:01.129 8800 174.7627
+2018.01.01 00:00:02.670 1400 175.7161
+q)\t select date,time,qty,px from t where sym=`aapl
+118
+q)/ \t times the statement
+q)/ this took 118 milliseconds to filter over 10 million rows.
+q)/ Crazy fast.
+q)first 10 20 30 40 50
+10
+q)last 10 20 30 40 50
+50
+q)5#select open:first px,close:last px by date,time from t where sym=`aapl
+date       time        | open     close
+-----------------------| -----------------
+2018.01.01 00:00:01.129| 174.7627 174.7627
+2018.01.01 00:00:02.670| 175.7161 175.7161
+2018.01.01 00:00:03.396| 175.518  175.518
+2018.01.01 00:00:04.772| 174.5059 174.5059
+2018.01.01 00:00:05.190| 176.4733 176.4733
+q)\t select open:first px,close:last px by date,time from t where sym=`aapl
+1844
+q)5#select open:first px,close:last px by date from t where sym=`aapl
+date      | open     close
+----------| -----------------
+2018.01.01| 174.7627 174.5251
+2018.01.02| 172.6117 175.7077
+2018.01.03| 176.2038 177.1559
+2018.01.04| 175.5028 176.1028
+2018.01.05| 173.9064 176.6098
+q)\t select open:first px,close:last px by date from t where sym=`aapl
+82
+q)5#select open:first px,close:last px,lo:min px,hi:max px by date from t where sym=`aapl
+date      | open     close    lo       hi
+----------| -----------------------------------
+2018.01.01| 174.7627 174.5251 172.0001 177.1599
+2018.01.02| 172.6117 175.7077 172      177.16
+2018.01.03| 176.2038 177.1559 172      177.16
+2018.01.04| 175.5028 176.1028 172      177.16
+2018.01.05| 173.9064 176.6098 172      177.16
+q)/ Example of weighted average function
+q)/ 4 3 2 1 wavg 10 20 30 40
+q)4 3 2 1 wavg 10 20 30 40
+20f
+q)/ the list on the left has the weights and the list on the right has the data to be averaged
+q)/ Example of xbar function
+q)5 xbar 0 1 2 3 4 5 10 11 14 15 16 18 20 21
+0 0 0 0 0 5 10 10 10 15 15 15 20 20
+q)/ result is the largest multiple of that is less than or equal to that number
+q)/ xbar is useful for grouping. Here it groups 0,1,2,34 to 0; 5 to 5; 10,11,14 to 10; 15,16,18 to 15 and 20,21 to 20.
+q)/ therefore xbar is useful if you want to group by intervals.
+q)/ especially if they are time intervals.
+q)3#t
+date       time         sym  qty  px
+------------------------------------------
+2018.01.01 00:00:01.129 aapl 8800 174.7627
+2018.01.01 00:00:02.099 amzn 8000 1198.197
+2018.01.01 00:00:02.670 aapl 1400 175.7161
+q)/ let us calculate the 5 minute VWAP for AAPL
+q)select vwap5min: qty wavg px by date, 5 xbar time.minute from t where sym=`aapl
+date       minute| vwap5min
+-----------------| --------
+2018.01.01 00:00 | 174.3869
+2018.01.01 00:05 | 174.563
+2018.01.01 00:10 | 174.7271
+2018.01.01 00:15 | 174.6067
+2018.01.01 00:20 | 174.7587
+2018.01.01 00:25 | 174.6656
+2018.01.01 00:30 | 174.5583
+2018.01.01 00:35 | 174.4095
+2018.01.01 00:40 | 174.4089
+2018.01.01 00:45 | 174.5439
+2018.01.01 00:50 | 174.6176
+2018.01.01 00:55 | 174.6667
+2018.01.01 01:00 | 174.5371
+2018.01.01 01:05 | 174.5473
+2018.01.01 01:10 | 174.6512
+2018.01.01 01:15 | 174.5646
+2018.01.01 01:20 | 174.7267
+2018.01.01 01:25 | 174.679
+2018.01.01 01:30 | 174.5679
+2018.01.01 01:35 | 174.4843
+..
+q)5# select vwap5min: qty wavg px by date, 5 xbar time.minute from t where sym=`aapl
+date       minute| vwap5min
+-----------------| --------
+2018.01.01 00:00 | 174.3869
+2018.01.01 00:05 | 174.563
+2018.01.01 00:10 | 174.7271
+2018.01.01 00:15 | 174.6067
+2018.01.01 00:20 | 174.7587
+q)/ example of max money that can be made by trading in aapl.
+q)/ this can be done by buying at the lowest price and selling at the highest price.
+q)select max px - min px from t where sym=`aapl
+px
+--------
+5.159992
+
+
+q)/ IO in q
+q)/ A string is a list of characers in q
+q)"a"
+"a"
+q)"h"
+"h"
+q)/ the above are atoms
+q)count "jab"
+3
+q)count 'jab'
+''
+  [0]  count 'jab'
+             ^
+q)/ the above is a list. Single quote does not work
+q)count `jab
+1
+q)/ this again is an atom
+q)2# `jab
+`jab`jab
+q)2# "jab"
+"ja"
+q)/see the difference
+q)/ A text file has records.
+q)/ It can be considered a list of records.
+q)/ therefore q maps it to a list of strings.
+q)/ essentially a list of lists.
+q)("So Long";"and thanks";"for all the fish")
+"So Long"
+"and thanks"
+"for all the fish"
+q)/ since the list is not made of homogeneous atoms
+q)/ it is represented in this form
+q)count ("So Long";"and thanks";"for all the fish")
+3
+q)`:C:\Users\user\checkout\learningPy\kdb\basic\solong.txt
+'\
+  [0]  `:C:\Users\user\checkout\learningPy\kdb\basic\solong.txt
+           ^
+q)`:C:\\Users\user\checkout\learningPy\kdb\basic\solong.txt
+'\
+  [0]  `:C:\\Users\user\checkout\learningPy\kdb\basic\solong.txt
+            ^
+q)`:C:\Users\user\checkout\learningPy\kdb\basic\solong.txt 0: ("So long";"and thanks";"for all the fish")
+'\
+  [0]  `:C:\Users\user\checkout\learningPy\kdb\basic\solong.txt 0: ("So long";"and thanks";"for all the fish")
+           ^
+q)/ effing stupid syntax
+q)/ taken brevity to a level where it becomes stupidity
+q)/ will learn that later
+q)
