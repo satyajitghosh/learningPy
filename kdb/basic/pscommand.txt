@@ -1,2 +1,10 @@
+In powershell terminal - do this
 Start-Transcript -Path "C:\Users\user\checkout\learningPy\kdb\basic\notestemp.txt"
 Stop-Transcript
+
+Open Ananconda terminal
+conda activate learn
+conda install -c kx embedPy
+conda install -c kx jupyterq
+Copy the license file to C:\Users\user\anaconda3\envs\learn\q
+Run - Jupyter notebook
