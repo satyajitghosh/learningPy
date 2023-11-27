@@ -1,7 +1,6 @@
-## Some basic differences between get and post.
 '''
-
-
+Same as the last file.
+Except this time the app is connected to a database.
 '''
 from fastapi import FastAPI,status,HTTPException
 from fastapi.responses import Response
@@ -18,18 +17,6 @@ class Post(BaseModel):
     content:str
     published:bool = True
 
-my_posts = [{"title":"title of post 1","content":"content of post 1","id":1},
-            {"title":"favourite foods","content":"I love Pizza","id":2}]
-
-def find_post(id:int):
-    for post in my_posts:
-        if id==post['id']:
-            return post
-
-def find_index(id:int):
-    for i,post in enumerate(my_posts):
-        if id==post['id']:
-            return i
 
 @app.get("/posts")
 def posts():
