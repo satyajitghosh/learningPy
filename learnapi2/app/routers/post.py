@@ -3,15 +3,15 @@ from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from .. import models,schemas,utils,oauth2
 from ..dbalchemy import get_db
-from typing import List
+from typing import List,Optional
 
 router = APIRouter(prefix="/posts",tags=["Posts"])
 # tags helps with segregating the endpoints in the HTML docs.
 
 @router.get("/",response_model=List[schemas.Post])
-def posts(db:Session = Depends(get_db),current_user:str=Depends(oauth2.get_current_user)):
+def posts(db:Session = Depends(get_db),current_user:str=Depends(oauth2.get_current_user),Limit:int=4,skip:int=0,search:Optional[str]=""):
     print(current_user.user)
-    posts = db.query(models.Post).all()
+    posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(Limit).offset(skip).all()
     return posts
 
 @router.get("/{id}",response_model=schemas.Post)
