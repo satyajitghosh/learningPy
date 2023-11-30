@@ -8,10 +8,6 @@ from .dbalchemy import get_db
 from .config import settings
 
 oath2_scheme = OAuth2PasswordBearer(tokenUrl='login')
-#SECRET KEY
-#ALGORITHM
-#EXPIRATION TIME
-
 
 def create_access_token(data:dict):
     to_encode = data.copy()
